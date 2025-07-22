@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/jenkins-docs/simple-java-maven-app', branch: 'main'
+                git url: 'https://github.com/jenkins-docs/simple-java-maven-app', branch: 'master'
             }
         }
         stage('Build') {
