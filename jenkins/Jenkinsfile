@@ -1,28 +1,33 @@
 pipeline {
     agent any
-    options {
-        skipStagesAfterUnstable()
+    tools {
+        maven 'Maven3' // Name from Global Tool Configuration
+        jdk 'JDK11'
     }
     stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/jenkins-docs/simple-java-maven-app', branch: 'main'
+            }
+        }
         stage('Build') {
             steps {
-                sh 'mvn -B -DskipTests clean package'
+                sh 'mvn clean package'
             }
         }
         stage('Test') {
             steps {
                 sh 'mvn test'
             }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
         }
-        stage('Deliver') { 
-            steps {
-                sh './jenkins/scripts/deliver.sh' 
-            }
+    }
+    post {
+        success {
+            archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+            echo 'Build and tests completed successfully!'
+        }
+        failure {
+            echo 'Build or tests failed.'
         }
     }
 }
